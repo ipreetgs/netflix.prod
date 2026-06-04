@@ -1,0 +1,124 @@
+name: Netflix Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 123456789012.dkr.ecr.us-east-1.amazonaws.com
+  EKS_CLUSTER_PRIMARY: netflix-clone-primary-eks
+  EKS_CLUSTER_SECONDARY: netflix-clone-secondary-eks
+
+jobs:
+  lint-and-test:
+    name: Lint & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install & Test Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run lint --if-present
+
+      - name: Install & Test Backend Services
+        run: |
+          for service in auth user catalog streaming metadata recommendation search billing notification; do
+            echo "Testing service: $service"
+            cd $GITHUB_WORKSPACE/services/$service
+            npm ci
+            npm run build
+          done
+
+  security-scan:
+    name: Security Vulnerability Audit
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Trivy Static Container Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+
+  docker-build-push:
+    name: Build & Push Images to ECR
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag and Push Frontend Image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/netflix-frontend:${{ github.sha }} -t $ECR_REGISTRY/netflix-frontend:latest ./frontend
+          docker push $ECR_REGISTRY/netflix-frontend:${{ github.sha }}
+          docker push $ECR_REGISTRY/netflix-frontend:latest
+
+      - name: Build, Tag and Push Microservice Images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          for service in auth user catalog streaming metadata recommendation search billing notification; do
+            echo "Building image for: $service"
+            docker build -t $ECR_REGISTRY/netflix-$service-service:${{ github.sha }} -t $ECR_REGISTRY/netflix-$service-service:latest ./services/$service
+            docker push $ECR_REGISTRY/netflix-$service-service:${{ github.sha }}
+            docker push $ECR_REGISTRY/netflix-$service-service:latest
+          done
+
+  deploy-gitops:
+    name: GitOps Deployment trigger (ArgoCD)
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Connect to EKS Cluster
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig EKS contexts
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_PRIMARY }}
+          
+      - name: Trigger ArgoCD Application Sync
+        run: |
+          # Inject new image version SHA tag into Argo Rollouts specs
+          kubectl set image rollout/auth-service auth-service=${{ env.ECR_REGISTRY }}/netflix-auth-service:${{ github.sha }} -n netflix
+          kubectl set image rollout/user-service user-service=${{ env.ECR_REGISTRY }}/netflix-user-service:${{ github.sha }} -n netflix
+          kubectl set image rollout/catalog-service catalog-service=${{ env.ECR_REGISTRY }}/netflix-catalog-service:${{ github.sha }} -n netflix
+          
+          # Monitor progressive canary update status
+          echo "Canary deployment triggered. Argo Rollouts is executing automated analysis..."

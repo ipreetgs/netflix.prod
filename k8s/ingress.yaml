@@ -1,0 +1,135 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: netflix-ingress
+  namespace: netflix
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # Rate Limiting & Security header configurations via ALB
+    alb.ingress.kubernetes.io/shield-advanced: 'true'
+    # alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:us-east-1:123456789012:regional/webacl/netflix-waf/a1b2c3d4
+spec:
+  rules:
+    - http:
+        paths:
+          # Auth Service
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 5001
+          
+          # User Service
+          - path: /api/profiles
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 5004
+          - path: /api/mylist
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 5004
+          - path: /api/history
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 5004
+          - path: /api/user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 5004
+
+          # Catalog Service
+          - path: /api/movies
+            pathType: Prefix
+            backend:
+              service:
+                name: catalog-service
+                port:
+                  number: 5002
+
+          # Streaming Service
+          - path: /api/stream
+            pathType: Prefix
+            backend:
+              service:
+                name: streaming-service
+                port:
+                  number: 5003
+
+          # Metadata Service
+          - path: /api/metadata
+            pathType: Prefix
+            backend:
+              service:
+                name: metadata-service
+                port:
+                  number: 5005
+
+          # Recommendation Service
+          - path: /api/recommendations
+            pathType: Prefix
+            backend:
+              service:
+                name: recommendation-service
+                port:
+                  number: 5006
+          - path: /api/trending
+            pathType: Prefix
+            backend:
+              service:
+                name: recommendation-service
+                port:
+                  number: 5006
+
+          # Search Service
+          - path: /api/search
+            pathType: Prefix
+            backend:
+              service:
+                name: search-service
+                port:
+                  number: 5007
+
+          # Billing Service
+          - path: /api/billing
+            pathType: Prefix
+            backend:
+              service:
+                name: billing-service
+                port:
+                  number: 5008
+
+          # Notification Service
+          - path: /api/notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 5009
+
+          # Frontend Web Application
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

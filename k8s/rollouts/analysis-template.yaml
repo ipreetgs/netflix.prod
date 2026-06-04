@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+  namespace: netflix
+spec:
+  metrics:
+    - name: success-rate
+      interval: 1m
+      # In production, we allow 2 failures before aborting
+      failureLimit: 2
+      successCondition: result[0] >= 0.99
+      provider:
+        prometheus:
+          address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(http_request_duration_seconds_count{status=~"2.*|3.*"}[2m])) 
+            / 
+            sum(rate(http_request_duration_seconds_count[2m]))
