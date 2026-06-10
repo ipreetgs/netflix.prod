@@ -25,6 +25,7 @@ out/
 *.njsproj
 *.sln
 *.sw?
+terraform/.terraform
 
 # OS files
 Thumbs.db
