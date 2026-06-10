@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: metadata-service
-          image: gurpreetghs/netflix-metadata-service:latest
+          image: gurpreetghs/netflix-metadata:latest
           ports:
             - containerPort: 5005
           env:
@@ -234,7 +234,7 @@ spec:
     spec:
       containers:
         - name: billing-service
-          image: ipreetgs/netflix-billing-service:latest
+          image: gurpreetghs/netflix-billing:latest
           ports:
             - containerPort: 5008
           env:
