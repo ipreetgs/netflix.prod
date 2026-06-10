@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: <your-registry>/netflix-user-service:latest
+          image: gurpreetghs/netflix-user-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5001

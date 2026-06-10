@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: catalog-service
-          image: <your-registry>/netflix-catalog-service:latest
+          image: gurpreetghs/netflix-catalog-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5002

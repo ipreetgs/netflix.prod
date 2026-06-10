@@ -1,15 +1,15 @@
 import axios from 'axios';
 
 // Microservices Ports Mapping (Docker-compose / Local)
-const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:5001';
-const CATALOG_SERVICE_URL = import.meta.env.VITE_CATALOG_SERVICE_URL || 'http://localhost:5002';
-const STREAMING_SERVICE_URL = import.meta.env.VITE_STREAMING_SERVICE_URL || 'http://localhost:5003';
-const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:5004';
-const METADATA_SERVICE_URL = import.meta.env.VITE_METADATA_SERVICE_URL || 'http://localhost:5005';
-const RECOMMENDATION_SERVICE_URL = import.meta.env.VITE_RECOMMENDATION_SERVICE_URL || 'http://localhost:5006';
-const SEARCH_SERVICE_URL = import.meta.env.VITE_SEARCH_SERVICE_URL || 'http://localhost:5007';
-const BILLING_SERVICE_URL = import.meta.env.VITE_BILLING_SERVICE_URL || 'http://localhost:5008';
-const NOTIFICATION_SERVICE_URL = import.meta.env.VITE_NOTIFICATION_SERVICE_URL || 'http://localhost:5009';
+const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || '';
+const CATALOG_SERVICE_URL = import.meta.env.VITE_CATALOG_SERVICE_URL || '';
+const STREAMING_SERVICE_URL = import.meta.env.VITE_STREAMING_SERVICE_URL || '';
+const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || '';
+const METADATA_SERVICE_URL = import.meta.env.VITE_METADATA_SERVICE_URL || '';
+const RECOMMENDATION_SERVICE_URL = import.meta.env.VITE_RECOMMENDATION_SERVICE_URL || '';
+const SEARCH_SERVICE_URL = import.meta.env.VITE_SEARCH_SERVICE_URL || '';
+const BILLING_SERVICE_URL = import.meta.env.VITE_BILLING_SERVICE_URL || '';
+const NOTIFICATION_SERVICE_URL = import.meta.env.VITE_NOTIFICATION_SERVICE_URL || '';
 
 // Axios Instances
 export const authApi = axios.create({ baseURL: AUTH_SERVICE_URL });

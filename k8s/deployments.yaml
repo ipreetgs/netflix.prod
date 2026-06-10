@@ -88,7 +88,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: <your-registry>/netflix-frontend:latest
+          image: gurpreetghs/netflix-frontend:latest
           ports:
             - containerPort: 80
           resources:

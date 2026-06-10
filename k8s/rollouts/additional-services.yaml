@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: <your-registry>/netflix-auth-service:latest
+          image: gurpreetghs/netflix-auth-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5001
@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: metadata-service
-          image: <your-registry>/netflix-metadata-service:latest
+          image: gurpreetghs/netflix-metadata-service:latest
           ports:
             - containerPort: 5005
           env:
@@ -132,7 +132,7 @@ spec:
     spec:
       containers:
         - name: recommendation-service
-          image: <your-registry>/netflix-recommendation-service:latest
+          image: gurpreetghs/netflix-recommendation-service:latest
           ports:
             - containerPort: 5006
           env:
@@ -183,7 +183,7 @@ spec:
     spec:
       containers:
         - name: search-service
-          image: <your-registry>/netflix-search-service:latest
+          image: gurpreetghs/netflix-search-service:latest
           ports:
             - containerPort: 5007
           env:
@@ -234,7 +234,7 @@ spec:
     spec:
       containers:
         - name: billing-service
-          image: <your-registry>/netflix-billing-service:latest
+          image: gurpreetghs/netflix-billing-service:latest
           ports:
             - containerPort: 5008
           env:
@@ -285,7 +285,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: <your-registry>/netflix-notification-service:latest
+          image: gurpreetghs/netflix-notification-service:latest
           ports:
             - containerPort: 5009
           env:

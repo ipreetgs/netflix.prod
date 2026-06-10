@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: streaming-service
-          image: <your-registry>/netflix-streaming-service:latest
+          image: gurpreetghs/netflix-streaming-service:latest
           ports:
             - containerPort: 5003
           env:
