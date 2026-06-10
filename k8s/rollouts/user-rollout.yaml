@@ -19,10 +19,10 @@ spec:
           image: gurpreetghs/netflix-user-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 5001
+            - containerPort: 5004
           env:
             - name: PORT
-              value: "5001"
+              value: "5004"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -45,7 +45,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 5001
+              port: 5004
             initialDelaySeconds: 15
             periodSeconds: 5
   strategy:

@@ -1,3 +1,9 @@
+# Services for workloads defined in deployments.yaml and rollouts/
+# Note: auth, metadata, recommendation, search, billing, notification services
+# are defined in additional-services-routing.yaml
+
+# --- Infrastructure Services ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -23,18 +29,32 @@ spec:
   selector:
     app: redis
   type: ClusterIP
+
+# --- Application Services ---
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: netflix
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: frontend
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: user-service
   namespace: netflix
-  labels:
-    app: user-service
 spec:
   ports:
-    - port: 5001
-      targetPort: 5001
+    - port: 5004
+      targetPort: 5004
   selector:
     app: user-service
   type: ClusterIP
@@ -44,8 +64,6 @@ kind: Service
 metadata:
   name: catalog-service
   namespace: netflix
-  labels:
-    app: catalog-service
 spec:
   ports:
     - port: 5002
@@ -59,27 +77,10 @@ kind: Service
 metadata:
   name: streaming-service
   namespace: netflix
-  labels:
-    app: streaming-service
 spec:
   ports:
     - port: 5003
       targetPort: 5003
   selector:
     app: streaming-service
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend
-  namespace: netflix
-  labels:
-    app: frontend
-spec:
-  ports:
-    - port: 80
-      targetPort: 80
-  selector:
-    app: frontend
   type: ClusterIP
