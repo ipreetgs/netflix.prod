@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: metadata-service
-          image: gurpreetghs/netflix-metadata:latest
+          image: gurpreetghs/netflix-metadata-service:latest
           ports:
             - containerPort: 5005
           env:
@@ -132,7 +132,7 @@ spec:
     spec:
       containers:
         - name: recommendation-service
-          image: ipreetgs/netflix-recommendation-service:latest
+          image: gurpreetghs/netflix-recommendation-service:latest
           ports:
             - containerPort: 5006
           env:
@@ -183,7 +183,7 @@ spec:
     spec:
       containers:
         - name: search-service
-          image: ipreetgs/netflix-search-service:latest
+          image: gurpreetghs/netflix-search-service:latest
           ports:
             - containerPort: 5007
           env:
@@ -234,7 +234,7 @@ spec:
     spec:
       containers:
         - name: billing-service
-          image: gurpreetghs/netflix-billing:latest
+          image: gurpreetghs/netflix-billing-service:latest
           ports:
             - containerPort: 5008
           env:
@@ -285,7 +285,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: ipreetgs/netflix-notification-service:latest
+          image: gurpreetghs/netflix-notification-service:latest
           ports:
             - containerPort: 5009
           env:
